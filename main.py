@@ -8,8 +8,8 @@ def connect_to_database():
 def create_default_tables(cursor):
     create_directors_query = """
     CREATE TABLE directors(
-        director_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, name VARCHAR(40) NOT NULL, surname VARCHAR(40) NOT NULL
-        rating INT NOT NULL
+        director_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, name VARCHAR(40) NOT NULL, surname VARCHAR(40) NOT NULL,
+        rating INT NOT NULL 
     );
     """
     create_movies_query = """
@@ -19,6 +19,8 @@ def create_default_tables(cursor):
         FOREIGN KEY (director_id) REFERENCES directors(director_id) 
     );
     """
+    cursor.execute(create_directors_query)
+    cursor.execute(create_movies_query)
 
 
 if __name__ == '__main__':
@@ -26,3 +28,4 @@ if __name__ == '__main__':
     with connection:
         cursor = connection.cursor()
         cursor.execute("CREATE DATABASE IF NOT EXISTS cinematic;")
+        create_default_tables(cursor)
