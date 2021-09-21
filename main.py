@@ -15,7 +15,7 @@ def create_default_tables(cursor):
     create_movies_query = """
     CREATE TABLE movies(
         movie_id INT PRIMARY KEY AUTO_INCREMENT NOT NULL, title VARCHAR(30) NOT NULL, year INT UNSIGNED NOT NULL,
-        director_id INT NOT NULL, rating INT NOT NULL, 
+        category VARCHAR(30), director_id INT NOT NULL, rating INT NOT NULL, 
         FOREIGN KEY (director_id) REFERENCES directors(director_id) 
     );
     """
