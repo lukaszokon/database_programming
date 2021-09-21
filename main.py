@@ -23,9 +23,36 @@ def create_default_tables(cursor):
     cursor.execute(create_movies_query)
 
 
+def insert_default_data(cursor, connection):
+    directors = [
+        ('Frank', 'Darabont', 7),
+        ('Francis Ford', 'Coppola', 8),
+        ('Quentin', 'Tarantino', 10),
+        ('Christopher', 'Nolan', 9),
+        ('David', 'Fincher', 7)]
+
+    movies = [('The Shawshank Redemption', 1994, 'Drama', 1, 8), ('The Green Mile', 1999, 'Drama', 1, 6),
+              ('The Godfather', 1972, 'Crime', 2, 7), ('The Godfather III', 1990, 'Crime', 2, 6),
+              ('Pulp Fiction', 1994, 'Crime', 3, 9), ('Inglourious Basterds', 2009, 'War', 3, 8),
+              ('The Dark Knight', 2008, 'Action', 4, 9), ('Interstellar', 2014, 'Sci-fi', 4, 8),
+              ('The Prestige', 2006, 'Drama', 4, 10), ('Fight Club', 1999, 'Drama', 5, 7),
+              ('Zodiac', 2007, 'Crime', 5, 5),
+              ('Seven', 1995, 'Drama', 5, 8), ('Alien 3', 1992, 'Horror', 5, 5)]
+
+    insert_directors_query = """INSERT INTO directors (name, surname, rating) VALUES(%s, %s, %s)"""
+    insert_movies_query = """INSERT INTO movies (title, year, category, director_id, rating) 
+    VALUES(%s, %s, %s, %s, %s)"""
+
+    cursor.executemany(insert_directors_query, directors)
+    connection.commit()
+    cursor.executemany(insert_movies_query, movies)
+    connection.commit()
+
+
 if __name__ == '__main__':
     connection = connect_to_database()
     with connection:
         cursor = connection.cursor()
         cursor.execute("CREATE DATABASE IF NOT EXISTS cinematic;")
-        create_default_tables(cursor)
+        # create_default_tables(cursor)
+        insert_default_data(cursor, connection)
