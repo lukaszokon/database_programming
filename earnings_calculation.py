@@ -46,8 +46,32 @@ def create_tables():
 def connect_to_database():
     global DB, CURSOR
     DB = MySQLdb.connect('localhost', 'root', 'lukasz')
+    CURSOR = DB.cursor()
+    create_database()
+    DB.select_db(DB_NAME)
+    create_tables()
+
+
+def add_job(name, hour_rate, extra=0):
+    query = """INSERT INTO stanowiska(name, hour_rate, extra) VALUES(%s, %s, %s);
+    """
     with DB:
-        CURSOR = DB.cursor()
-        create_database()
-        DB.select_db(DB_NAME)
-        create_tables()
+        CURSOR.execute(query, (name, hour_rate, extra))
+        DB.commit()
+
+
+def add_etat(name, hour_count):
+    query = """INSERT INTO etaty(name, hour_count) VALUES(%s, %s);
+    """
+    with DB:
+        CURSOR.execute(query, (name, hour_count))
+        DB.commit()
+
+
+def add_worker(name, surname, pesel, hire_date, id_stanowisko, id_etat):
+    query = """INSERT INTO pracownicy(name, surname, pesel, hire_date, id_stanowisko, id_etat) 
+    VALUES(%s, %s, %s, %s, %s, %s);
+    """
+    with DB:
+        CURSOR.execute(query, (name, surname, pesel, hire_date, id_stanowisko, id_etat))
+        DB.commit()

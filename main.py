@@ -51,3 +51,4 @@ def insert_default_data(cursor, connection):
 
 if __name__ == '__main__':
     earnings_calculation.connect_to_database()
+    earnings_calculation.add_job("test", 10.25, 0)
