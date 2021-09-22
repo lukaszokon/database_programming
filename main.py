@@ -1,3 +1,5 @@
+import datetime
+
 import MySQLdb, earnings_calculation
 
 
@@ -51,4 +53,8 @@ def insert_default_data(cursor, connection):
 
 if __name__ == '__main__':
     earnings_calculation.connect_to_database()
-    earnings_calculation.add_job("test", 10.25, 0)
+    # earnings_calculation.add_job("Developer", 22.50, 0)
+    # earnings_calculation.add_etat("Full time", 8)
+    # earnings_calculation.add_worker("Jacek", "Kowalski",90072108032, datetime.datetime.now(), 3, 1)
+    earnings_calculation.print_earnings(12,15)
+    earnings_calculation.close_connection()

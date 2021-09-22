@@ -33,7 +33,7 @@ def create_tables():
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     name VARCHAR(50) NOT NULL,
     surname VARCHAR(50) NOT NULL,
-    pesel INT NOT NULL,
+    pesel BIGINT NOT NULL,
     hire_date DATE NOT NULL,
     id_stanowisko INT NOT NULL,
     id_etat INT NOT NULL,
@@ -55,23 +55,35 @@ def connect_to_database():
 def add_job(name, hour_rate, extra=0):
     query = """INSERT INTO stanowiska(name, hour_rate, extra) VALUES(%s, %s, %s);
     """
-    with DB:
-        CURSOR.execute(query, (name, hour_rate, extra))
-        DB.commit()
+    CURSOR.execute(query, (name, hour_rate, extra))
+    DB.commit()
 
 
 def add_etat(name, hour_count):
     query = """INSERT INTO etaty(name, hour_count) VALUES(%s, %s);
     """
-    with DB:
-        CURSOR.execute(query, (name, hour_count))
-        DB.commit()
+    CURSOR.execute(query, (name, hour_count))
+    DB.commit()
 
 
 def add_worker(name, surname, pesel, hire_date, id_stanowisko, id_etat):
     query = """INSERT INTO pracownicy(name, surname, pesel, hire_date, id_stanowisko, id_etat) 
     VALUES(%s, %s, %s, %s, %s, %s);
     """
-    with DB:
-        CURSOR.execute(query, (name, surname, pesel, hire_date, id_stanowisko, id_etat))
-        DB.commit()
+    CURSOR.execute(query, (name, surname, pesel, hire_date, id_stanowisko, id_etat))
+    DB.commit()
+
+
+def close_connection():
+    if DB:
+        DB.close()
+
+
+def print_earnings(month, year):
+    query = """SELECT pracownicy.name, pracownicy.surname, pracownicy.pesel,
+    stanowiska.name, stanowiska.hour_rate, stanowiska.extra, etaty.hour_count 
+    FROM pracownicy, stanowiska, etaty
+    WHERE pracownicy.id_stanowisko = stanowiska.id AND pracownicy.id_etat = etaty.id
+    """
+    CURSOR.execute(query)
+    print(CURSOR.fetchall())
