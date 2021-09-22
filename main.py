@@ -1,4 +1,4 @@
-import MySQLdb
+import MySQLdb, earnings_calculation
 
 
 def connect_to_database():
@@ -50,9 +50,4 @@ def insert_default_data(cursor, connection):
 
 
 if __name__ == '__main__':
-    connection = connect_to_database()
-    with connection:
-        cursor = connection.cursor()
-        cursor.execute("CREATE DATABASE IF NOT EXISTS cinematic;")
-        # create_default_tables(cursor)
-        insert_default_data(cursor, connection)
+    earnings_calculation.connect_to_database()
