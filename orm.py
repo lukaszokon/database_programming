@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, insert, select
+from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, insert, select, and_, between
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -68,16 +68,29 @@ def add_default_data():
     connection.close()
 
 
-def select_drama():
+def zad_6():
     connection = ENGINE.connect()
 
-    select_query = select([Movie]).where(Movie.category == 'Drama')
+    select_query = select([Movie]).where(and_(Movie.category == 'Drama', Movie.year > 1994))
     result = connection.execute(select_query)
     print(result.fetchall())
     connection.close()
 
-    result = SESSION.query(Movie).filter(Movie.category == 'drama').all()
+    result = SESSION.query(Movie).filter(and_(Movie.category == 'Drama', Movie.year > 1994)).all()
     print(result)
 
 
-select_drama()
+def zad_7():
+    connection = ENGINE.connect()
+
+    select_query = select([Movie.category, Movie.rating]).where(
+        and_(Movie.rating > 7, between(Movie.year, 2000, 2010))).order_by(Movie.rating.desc())
+    result = connection.execute(select_query)
+    print(result.fetchall())
+    connection.close()
+
+    result = SESSION.query(Movie.category, Movie.rating).filter(and_(Movie.rating > 7, between(Movie.year, 2000, 2010))).order_by(Movie.rating.desc()).all()
+    print(result)
+
+
+zad_7()
