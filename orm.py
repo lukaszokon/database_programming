@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, insert, select, and_, between
+from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, insert, select, and_, between, or_, join
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -89,8 +89,38 @@ def zad_7():
     print(result.fetchall())
     connection.close()
 
-    result = SESSION.query(Movie.category, Movie.rating).filter(and_(Movie.rating > 7, between(Movie.year, 2000, 2010))).order_by(Movie.rating.desc()).all()
+    result = SESSION.query(Movie.category, Movie.rating).filter(
+        and_(Movie.rating > 7, between(Movie.year, 2000, 2010))).order_by(Movie.rating.desc()).all()
     print(result)
 
 
-zad_7()
+def zad_8():
+    connection = ENGINE.connect()
+
+    select_query = select([Director.surname]).where(
+        and_(Director.rating >= 6, or_(Director.name.like('D%'), Director.name.like('%n'))))
+    result = connection.execute(select_query)
+    print(result.fetchall())
+    connection.close()
+
+    result = SESSION.query(Director.surname).filter(
+        and_(Director.rating >= 6, (Director.name.like('D%') | Director.name.like('%n')))).all()
+    print(result)
+
+
+def zad_2_1():
+    connection = ENGINE.connect()
+    joined_tables = join(Director, Movie)
+    select_query = select([Director.name, Director.surname]).select_from(joined_tables).where(
+        and_(Movie.rating < 9, between(Movie.year, 2011, 2014))
+    )
+    result = connection.execute(select_query)
+    print(result.fetchall())
+    connection.close()
+
+    result = SESSION.query(Director.name, Director.surname).join(Movie).filter(
+        and_(Movie.rating < 9, between(Movie.year, 2011, 2014))).all()
+    print(result)
+
+
+zad_2_1()
