@@ -159,7 +159,7 @@ def zad_2_4():
         'WHERE movies.year '
         'BETWEEN :start_year AND :end_year '
         'GROUP BY directors.director_id')
-    result = SESSION.query('count_1', 'name', 'surname', 'avg_1').from_statement(q).params(start_year=1950,
+    result = SESSION.query(text('count_1'), text('name'), text('surname'), text('avg_1')).from_statement(q).params(start_year=1950,
                                                                                            end_year=2000).all()
     print(result)
 
