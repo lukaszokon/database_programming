@@ -1,4 +1,5 @@
-from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, insert, select, and_, between, or_, join
+from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, insert, select, and_, between, or_, join, \
+    func, text
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -123,4 +124,44 @@ def zad_2_1():
     print(result)
 
 
-zad_2_1()
+def zad_2_2():
+    connection = ENGINE.connect()
+    joined_tables = join(Director, Movie)
+    select_query = select(
+        [func.count(Movie.movie_id), Director.name, Director.surname, func.avg(Movie.rating)]).select_from(
+        joined_tables).group_by(Director.director_id)
+    result = connection.execute(select_query)
+    print(result.fetchall())
+    connection.close()
+
+    result = SESSION.query(func.count(Movie.movie_id), Director.name, Director.surname, func.avg(Movie.rating)).join(
+        Director).group_by(Director.director_id).all()
+    print(result)
+
+
+def zad_2_3():
+    joined_tables = join(Director, Movie)
+    select_query = select(
+        [func.count(Movie.movie_id), Director.name, Director.surname, func.avg(Movie.rating)]).select_from(
+        joined_tables).group_by(Director.director_id)
+    print(select_query)
+
+    result = SESSION.query(func.count(Movie.movie_id), Director.name, Director.surname, func.avg(Movie.rating)).join(
+        Director).group_by(Director.director_id)
+    print(result)
+
+
+def zad_2_4():
+    q = text(
+        'SELECT count(movies.movie_id) AS count_1, directors.name, directors.surname, avg(movies.rating) AS avg_1 FROM '
+        'directors '
+        'JOIN movies ON directors.director_id = movies.director_id '
+        'WHERE movies.year '
+        'BETWEEN :start_year AND :end_year '
+        'GROUP BY directors.director_id')
+    result = SESSION.query('count_1', 'name', 'surname', 'avg_1').from_statement(q).params(start_year=1950,
+                                                                                           end_year=2000).all()
+    print(result)
+
+
+zad_2_4()
