@@ -188,4 +188,22 @@ def zad_2_5():
     connection.close()
 
 
-zad_2_5()
+# ZAD 2.6
+def get_directors_statistics(session, start_year, end_year):
+    q = text(
+        'SELECT count(movies.movie_id) AS count_1, directors.name, directors.surname, avg(movies.rating) AS avg_1 FROM '
+        'directors '
+        'JOIN movies ON directors.director_id = movies.director_id '
+        'WHERE movies.year '
+        'BETWEEN :start_year AND :end_year '
+        'GROUP BY directors.director_id')
+    q.bindparams(
+        bindparam('start_year', type_=Integer),
+        bindparam('end_year', type_=Integer),
+    )
+    result = session.query(text('count_1'), text('name'), text('surname'), text('avg_1')).from_statement(q).params(
+        start_year=start_year, end_year=end_year).all()
+    return result
+
+
+print(get_directors_statistics(SESSION, 1950, 2000))
