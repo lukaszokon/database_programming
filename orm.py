@@ -206,4 +206,22 @@ def get_directors_statistics(session, start_year, end_year):
     return result
 
 
-print(get_directors_statistics(SESSION, 1950, 2000))
+def zad_2_7():
+    subq = SESSION.query(Movie.director_id).filter(and_(Movie.year < 2001, Movie.title.like('T%'))).subquery()
+
+    SESSION.query(Director).filter(Director.director_id.in_(subq)).update(
+        {'rating': (Director.rating + 1)}, synchronize_session='fetch')
+    SESSION.commit()
+
+
+def zad_2_8(name):
+    with SESSION.begin():
+        subquery = SESSION.query(Director.director_id).filter(Director.name == name).subquery()
+        SESSION.query(Movie).filter(Movie.director_id.in_(subquery)).delete(synchronize_session='fetch')
+        SESSION.query(Director).filter(Director.name == name).delete()
+
+
+zad_2_8('Frank')
+# print(get_directors_statistics(SESSION, 1950,2001))
+# zad_2_7()
+# print(get_directors_statistics(SESSION, 1950,2001))
