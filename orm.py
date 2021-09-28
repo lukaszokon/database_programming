@@ -159,8 +159,9 @@ def zad_2_4():
         'WHERE movies.year '
         'BETWEEN :start_year AND :end_year '
         'GROUP BY directors.director_id')
-    result = SESSION.query(text('count_1'), text('name'), text('surname'), text('avg_1')).from_statement(q).params(start_year=1950,
-                                                                                           end_year=2000).all()
+    result = SESSION.query(text('count_1'), text('name'), text('surname'), text('avg_1')).from_statement(q).params(
+        start_year=1950,
+        end_year=2000).all()
     print(result)
 
 
@@ -221,7 +222,20 @@ def zad_2_8(name):
         SESSION.query(Director).filter(Director.name == name).delete()
 
 
-zad_2_8('Frank')
+def delete_director(**kwargs):
+    if 'name' in kwargs:
+        query = text('SELECT directors.director_id FROM directors WHERE directors.name = :name')
+    elif 'surname' in kwargs:
+        query = text('SELECT directors.director_id FROM directors WHERE directors.surname = :surname')
+    else:
+        return
+    with SESSION.begin():
+        director_id = SESSION.query(Director.director_id).from_statement(query).params(**kwargs).first()[0]
+        SESSION.query(Movie).filter(Movie.director_id == director_id).delete()
+        SESSION.query(Director).filter(Director.director_id == director_id).delete()
+
+
+delete_director(surname='Nolan')
 # print(get_directors_statistics(SESSION, 1950,2001))
 # zad_2_7()
 # print(get_directors_statistics(SESSION, 1950,2001))
