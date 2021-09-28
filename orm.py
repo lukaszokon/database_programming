@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, insert, select, and_, between, or_, join, \
-    func, text
+    func, text, bindparam
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -164,4 +164,28 @@ def zad_2_4():
     print(result)
 
 
-zad_2_4()
+def zad_2_5():
+    q = text(
+        'SELECT count(movies.movie_id) AS count_1, directors.name, directors.surname, avg(movies.rating) AS avg_1 FROM '
+        'directors '
+        'JOIN movies ON directors.director_id = movies.director_id '
+        'WHERE movies.year '
+        'BETWEEN :start_year AND :end_year '
+        'GROUP BY directors.director_id')
+    q.bindparams(
+        bindparam('start_year', type_=Integer),
+        bindparam('end_year', type_=Integer),
+    )
+    result = SESSION.query(text('count_1'), text('name'), text('surname'), text('avg_1')).from_statement(q).params(
+        start_year=2000, end_year=2010).all()
+    print(result)
+
+    connection = ENGINE.connect()
+    result = connection.execute(q, start_year=2000, end_year=2010)
+    for row in result:
+        print(f"{row.count_1, row.name, row.surname, row.avg_1}")
+    print(result.fetchall())
+    connection.close()
+
+
+zad_2_5()
